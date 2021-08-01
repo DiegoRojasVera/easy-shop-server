@@ -63,5 +63,3 @@ productSchema.method('toJSON', function () {
     return { ...result, id };
 });
 
-
-exports.Product = mongoose.model('Product', productSchema)
