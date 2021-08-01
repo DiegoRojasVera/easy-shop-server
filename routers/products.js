@@ -78,8 +78,7 @@ router.post(`/`, uploadOptions.single('image'), async (req, res) => {
 
     product = await product.save();
 
-    if (!product)
-        return res.status(500).send('The product cannot be created');
+    if (!product) return res.status(500).send('The product cannot be created');
 
     res.send(product);
 });
@@ -160,7 +159,6 @@ router.get(`/get/count`, async (req, res) => {
         productCount: productCount,
     });
 });
-
 
 router.get(`/get/featured/:count`, async (req, res) => {
     const count = req.params.count ? req.params.count : 0;

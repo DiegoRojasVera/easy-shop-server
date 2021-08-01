@@ -15,7 +15,11 @@ router.get(`/`, async (req, res) => {
 router.get(`/:id`, async (req, res) => {
     const order = await Order.findById(req.params.id)
         .populate('user', 'name')
-        .populate({ path: 'orderItems', populate: { path: 'product', populate: 'category' } });
+        .populate({
+            path: 'orderItems', populate: {
+                path: 'product', populate: 'category'
+            }
+        });
 
     if (!order) {
         res.status(500).json({ success: false })
@@ -24,7 +28,7 @@ router.get(`/:id`, async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-    const orderItemsIds = Promise.all(req.body.orderItems.map(async orderItem => {
+    const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) => {
         let newOrderItem = new OrderItem({
             quantity: orderItem.quantity,
             product: orderItem.product
@@ -34,9 +38,7 @@ router.post('/', async (req, res) => {
 
         return newOrderItem._id;
     }))
-
     const orderItemsIdsResolved = await orderItemsIds;
-    console.log(orderItemsIdsResolved);
 
     const totalPrices = await Promise.all(orderItemsIdsResolved.map(async (orderItemId) => {
         const orderItem = await OrderItem.findById(orderItemId).populate('product', 'price');
@@ -45,8 +47,6 @@ router.post('/', async (req, res) => {
     }))
 
     const totalPrice = totalPrices.reduce((a, b) => a + b, 0);
-
-    console.log(totalPrices)
 
     let order = new Order({
         orderItems: orderItemsIdsResolved,
@@ -59,10 +59,7 @@ router.post('/', async (req, res) => {
         status: req.body.status,
         totalPrice: totalPrice,
         user: req.body.user,
-
-
     })
-
     order = await order.save();
 
     if (!order)
@@ -82,10 +79,11 @@ router.put('/:id', async (req, res) => {
     )
 
     if (!order)
-        return res.status(400).send('the order cannot be created!')
+        return res.status(400).send('the order cannot be update!')
 
     res.send(order);
 })
+
 
 router.delete('/:id', (req, res) => {
     Order.findByIdAndRemove(req.params.id).then(async order => {
@@ -93,7 +91,7 @@ router.delete('/:id', (req, res) => {
             await order.orderItems.map(async orderItem => {
                 await OrderItem.findByIdAndRemove(orderItem)
             })
-            return res.status(200).json({ success: true, message: 'the order' })
+            return res.status(200).json({ success: true, message: 'the order is deleted!' })
         } else {
             return res.status(404).json({ success: false, message: "order not found!" })
         }
@@ -110,21 +108,20 @@ router.get('/get/totalsales', async (req, res) => {
     if (!totalSales) {
         return res.status(400).send('The order sales cannot be generated')
     }
+
     res.send({ totalsales: totalSales.pop().totalsales })
 })
 
-
-
 router.get(`/get/count`, async (req, res) => {
-    const orderCount = await Order.countDocuments((count) => count);
+    const orderCount = await Order.countDocuments((count) => count)
 
     if (!orderCount) {
-        res.status(500).json({ success: false });
+        res.status(500).json({ success: false })
     }
     res.send({
-        orderCount: orderCount,
+        orderCount: orderCount
     });
-});
+})
 
 router.get(`/get/userorders/:userid`, async (req, res) => {
     const userOrderList = await Order.find({ user: req.params.userid }).populate({
@@ -138,5 +135,7 @@ router.get(`/get/userorders/:userid`, async (req, res) => {
     }
     res.send(userOrderList);
 })
+
+
 
 module.exports = router;
