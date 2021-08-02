@@ -1,4 +1,5 @@
 const expressJwt = require('express-jwt');
+const { models } = require('mongoose');
 
 function authJwt() {
     const secret = process.env.secret;
@@ -25,4 +26,5 @@ async function isRevoked(req, payload, done) {
     done();
 }
 
-moduls.exports = authJwt
+
+models.exports = authJwt
