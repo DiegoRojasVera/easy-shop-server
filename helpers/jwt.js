@@ -17,6 +17,7 @@ function authJwt() {
             `${api}/users/login`,
             `${api}/users/register`,
         ]
+        
     })
 }
 

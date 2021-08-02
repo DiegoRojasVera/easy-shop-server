@@ -6,6 +6,7 @@ const orderSchema = mongoose.Schema({
         ref: 'OrderItem',
         required: true
     }],
+    
     shippingAddress1: {
         type: String,
         required: true,
